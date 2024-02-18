@@ -110,10 +110,10 @@ void command_token(char *command_string)
         token_count++;
     }
 
-    // for(int i =0 ; i<token_count;i++)
-    // {
-    //     printf("%d   %s\n",i, token[i]);
-    // }
+    //  for(int i =0 ; i<token_count;i++)
+    //  {
+    //      printf("%d   %s\n",i, token[i]);
+    //  }
 
     if (token[0] && strcmp(token[0], "exit") == 0)
     {
@@ -150,7 +150,7 @@ void command_token(char *command_string)
         pid_t pid = fork();
         if (pid == 0)
         {
-            if (found == 1)
+            if (found == 1 && token[0]!= NULL)
             {
                 for(int i =0; i< MAX_NUM_ARGUMENTS;i++)
                 {
@@ -158,7 +158,11 @@ void command_token(char *command_string)
                     {
                         break;
                     }
-                    else if(token[i] && strcmp(token[i], ">")==0)
+                    else if ( strcmp(token[i], ">")==0 && token[i+1]!=NULL && token[i+2]!=NULL)
+                    {
+                         exit(0);       
+                    }
+                    else if(token[i] && strcmp(token[i], ">")== 0)
                     {
                         int fd = open(token[i+1],O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
                         if (fd < 0)
@@ -170,13 +174,18 @@ void command_token(char *command_string)
                         close(fd);
 
                         token[i] = NULL;
+                        token[i+1] = NULL;
                     }  
                 }
                 execvp(token[0],token);
             }
-            else {
+            else if (token[0] == NULL)
+            {
+                exit(0);
+            }
+            else 
+            {
                 write(STDERR_FILENO,error_message,strlen(error_message));
-
             }
         }
         else if(pid >0)
