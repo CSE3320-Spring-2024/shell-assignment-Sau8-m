@@ -49,6 +49,7 @@ enum mode
 int main( int argc, char *argv[] )
 {
     char *command_string = (char*)malloc(MAX_COMMAND_SIZE);
+    char error_message[30] = "An error has occurred\n";
     FILE *file = NULL;
     int mode;
 
@@ -59,6 +60,11 @@ int main( int argc, char *argv[] )
     else if(argc == 1)
     {
         mode = INTERACTIVE;
+    }
+    else
+    {
+        write(STDERR_FILENO,error_message,strlen(error_message));
+        exit(1);
     }
 
     while(1)
@@ -73,14 +79,30 @@ int main( int argc, char *argv[] )
         else if (mode == BATCH)
         {
             file = fopen(argv[1], "r");
+            
             if (file == NULL)
             {
-                exit(0);
+                write(STDERR_FILENO,error_message,strlen(error_message));
+                exit(1);
             }
-            while (fgets(command_string,MAX_COMMAND_SIZE,file) != NULL)
+            else if (file != NULL)
             {
-                command_token(command_string);
+                while (fgets(command_string,MAX_COMMAND_SIZE,file) != NULL)
+                {
+                    command_token(command_string);
+                }
+                if(feof(file))
+                {    
+                //write(STDERR_FILENO,error_message,strlen(error_message));
+                exit(0);
+                } 
             }
+            
+            else
+            {    
+                write(STDERR_FILENO,error_message,strlen(error_message));
+                exit(1);
+            }    
             fclose(file);
         }
     }
@@ -140,8 +162,13 @@ void command_token(char *command_string)
             if(access(path,X_OK)==0)
             {
                 found = 1;
-                break;
+                //break;
             }
+            // else
+            // {
+            //     write(STDERR_FILENO,error_message,strlen(error_message));
+            //     exit(0);
+            // }
         }
 
             // printf ("%s\n",path);
@@ -158,8 +185,9 @@ void command_token(char *command_string)
                     {
                         break;
                     }
-                    else if ( strcmp(token[i], ">")==0 && token[i+1]!=NULL && token[i+2]!=NULL)
+                    else if (token[i] && strcmp(token[i], ">")==0 && token[i+1]!=NULL && token[i+2]!=NULL)
                     {
+                        write(STDERR_FILENO,error_message,strlen(error_message));
                          exit(0);       
                     }
                     else if(token[i] && strcmp(token[i], ">")== 0)
@@ -177,25 +205,33 @@ void command_token(char *command_string)
                         token[i+1] = NULL;
                     }  
                 }
-                execvp(token[0],token);
+                int ret = execvp(token[0],token);
+                if(ret == -1)
+                {
+                    write(STDERR_FILENO,error_message,strlen(error_message));
+                    exit(1);
+                }
             }
             else if (token[0] == NULL)
             {
-                exit(0);
+                exit(1);
             }
             else 
             {
                 write(STDERR_FILENO,error_message,strlen(error_message));
+                exit(1);
             }
         }
         else if(pid >0)
         {
             int status;
-            wait(&status);
+            waitpid(pid, &status, 0 );
+            fflush(NULL);
         }
         else  
         {
             write(STDERR_FILENO,error_message,strlen(error_message));
+            exit(1);
         }   
     }
 free(head_prt);
