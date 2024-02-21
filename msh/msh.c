@@ -93,7 +93,6 @@ int main( int argc, char *argv[] )
                 }
                 if(feof(file))
                 {    
-                //write(STDERR_FILENO,error_message,strlen(error_message));
                 exit(0);
                 } 
             }
@@ -125,11 +124,12 @@ void command_token(char *command_string)
     while(((argument_ptr= strsep(&working_string,WHITESPACE)) !=NULL) && (token_count<MAX_NUM_ARGUMENTS))
     {
         token[token_count] = strndup(argument_ptr,MAX_COMMAND_SIZE);
-        if(strlen(token[token_count]) == 0)
+        if(strlen(token[token_count]) > 0)
         {
-            token[token_count] =NULL;
+            token_count++;
         }
-        token_count++;
+        else
+            token[token_count] =NULL;
     }
 
     //  for(int i =0 ; i<token_count;i++)
