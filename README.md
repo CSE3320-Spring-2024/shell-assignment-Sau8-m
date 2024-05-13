@@ -1,3 +1,5 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/QgP-rrgn)
+[![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-7f7980b617ed060a017424585567c406b6ee15c891e84e1186181d67ecf80aa0.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=13698737)
 
 # Unix Shell
 
@@ -127,8 +129,7 @@ The most challenging part is getting the arguments correctly specified.
 ### Paths
 
 **Important:** Note that the shell itself does not *implement* `ls` or other
-commands (except built-ins). All it does is find those executables in one of
-the directories specified by `path` and create a new process to run them.
+commands (except built-ins). 
 
 To check if a particular file exists in a directory and is executable,
 consider the `access()` system call. For example, when the user types `ls`,
@@ -146,7 +147,7 @@ programs. Instead, your shell will invoke your implementation of the built-in
 command. For example, to implement the `exit` built-in command, you simply
 call `exit(0);` in your msh source code, which then will exit the shell.
 
-In this project, you should implement `exit`, `cd`, and `path` as built-in
+In this project, you should implement `exit`, and `cd` as built-in
 commands.
 
 * `exit`: When the user types `exit`, your shell should simply call the `exit`
@@ -178,9 +179,6 @@ The exact format of redirection is a command (and possibly some arguments)
 followed by the redirection symbol followed by a filename. Multiple
 redirection operators or multiple files to the right of the redirection sign
 are errors.
-
-Note: don't worry about redirection for built-in commands (e.g., we will
-not test what happens when you type `path /bin > file`).
 
 Hint: [popen.c](https://github.com/CSE3320-Spring-2024/Code-Samples/blob/main/popen.c)
 in the Code-Samples repo demonstrates how to do a redirection
